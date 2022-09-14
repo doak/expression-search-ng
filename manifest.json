@@ -12,7 +12,7 @@
   "description": "Type 'from:fred to:tom' to see all messages from Fred to Tom in the current view.",
   "author": "Klaus Buecher, Opera Wang",
   "homepage_url": "https://github.com/opto/expression-search-NG",
-  
+
   "icons": {
     "32": "icon.png",
     "48": "icon.png",
@@ -40,9 +40,9 @@
 			"scopes": ["addon_parent"],
 			"paths": [["Utilities"]],
 			"script": "api/Utilities/implementation.js"
-		  
+
 		   }
 		}
 
-  }  
+  }
 }

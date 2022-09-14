@@ -23,7 +23,7 @@ function onFolderPick(aEvent) {
   let value = gPickedFolder.URI || gPickedFolder.value;
   let folderPicker = document.getElementById("esNewFolderPicker");
   folderPicker.value = value; // must set value before set label, or next line may fail when previous value is empty
-  folderPicker.setAttribute("label", label); 
+  folderPicker.setAttribute("label", label);
   folderPicker.setAttribute('tooltiptext', showPrettyTooltip(value, label));
 }
 

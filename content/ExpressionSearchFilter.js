@@ -16,7 +16,7 @@ console.log("File", ESextension.rootURI.resolve("content/es.js"), ExpressionSear
 
 
 const { nsMsgSearchAttrib: nsMsgSearchAttrib, nsMsgSearchOp: nsMsgSearchOp, nsMsgMessageFlags: nsMsgMessageFlags, nsMsgSearchScope: nsMsgSearchScope } = Ci;
-//if (!ExpressionSearchChrome  )  
+//if (!ExpressionSearchChrome  )
 var  {ExpressionSearchChrome} =  ChromeUtils.import("chrome://expressionsearch/content/es.js");
 console.log("ExpressionSearchChrome",ExpressionSearchChrome);
 var {ExpressionSearchLog} =  ChromeUtils.import("chrome://expressionsearch/content/log.js");
@@ -69,7 +69,7 @@ function _getRegEx(aSearchValue) {
     searchValue = aSearchValue.substring(1, lastSlashIndex);
     searchFlags = aSearchValue.substring(lastSlashIndex + 1);
   }
-  try { 
+  try {
     regexp = new RegExp(searchValue, searchFlags);
   } catch(err) {
     if ( !badREs[aSearchValue] ) {
@@ -81,7 +81,7 @@ function _getRegEx(aSearchValue) {
 }
 
 (function ExperssionSearchCustomerTerms() {
-  
+
   function customerTermBase(nameId, Operators){
     let self = this; // In constructors, this is always your instance. Just for safe.
     self.id = "expressionsearch#" + nameId;
@@ -93,7 +93,7 @@ function _getRegEx(aSearchValue) {
       if ( aSearchScope==nsMsgSearchScope.offlineMail || aSearchScope==nsMsgSearchScope.offlineMailFilter
         || aSearchScope==nsMsgSearchScope.localNewsBody || aSearchScope==nsMsgSearchScope.localNewsJunkBody ) return true;
       return false;
-      //onlineManual 
+      //onlineManual
     };
     self.getEnabled = function _getEnabled(scope, op) {
       return self._isValid(scope);
@@ -112,18 +112,18 @@ function _getRegEx(aSearchValue) {
       return Operators;
     };
   }
-  
+
   // search subject with regular expression, reference FiltaQuilla by Kent James
   // case sensitive
   let subjectRegex = new customerTermBase("subjectRegex", [nsMsgSearchOp.Matches, nsMsgSearchOp.DoesntMatch]);
   subjectRegex.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     // aMsgHdr.subject is mime encoded, also aMsgHdr.subject may has line breaks in it
-    // Upon putting subject into msg db, all Re:'s are stripped and MSG_FLAG_HAS_RE flag is set. 
+    // Upon putting subject into msg db, all Re:'s are stripped and MSG_FLAG_HAS_RE flag is set.
     let subject = aMsgHdr.mime2DecodedSubject || '';
     if ( aMsgHdr.flags & Ci.nsMsgMessageFlags.HasRe ) subject = "Re: " + subject; // mailnews.localizedRe ?
     return _getRegEx(aSearchValue).test(subject) ^ (aSearchOp == nsMsgSearchOp.DoesntMatch);
   };
-  
+
   // workaround for Bug 124641 - Thunderbird does not handle multi-line headers correctly when search term spans lines
   // case sensitive, not like normal subject search
   // Now the bug was fixed after TB5.0, but still usefull when subject contains special characters
@@ -131,7 +131,7 @@ function _getRegEx(aSearchValue) {
   subjectSimple.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     return (aMsgHdr.mime2DecodedSubject.indexOf(aSearchValue) != -1) ^ (aSearchOp == nsMsgSearchOp.DoesntContain);
   };
-  
+
   let headerRegex = new customerTermBase("headerRegex", [nsMsgSearchOp.Matches, nsMsgSearchOp.DoesntMatch]);
   headerRegex.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     // https://bugzilla.mozilla.org/show_bug.cgi?id=363238
@@ -149,7 +149,7 @@ function _getRegEx(aSearchValue) {
     // ExpressionSearchLog.logObject(aMsgHdr,'aMsgHdr',0);
     // flags:1 label:0 statusOfset:21 sender:<cc@some.com> recipients:swe-web@some.com subject:[swe-web] Error: Web Applications Down message-id:201202030701.q1371Noo014742@peopf999.some.com date:4f2b8643 dateReceived:4f2b864b priority:1 list-id:<swe-web.some.com> x-mime-autoconverted:from quoted-printable to 8bit by sympa.some.com id q1371O8j002081 msgCharSet:iso-8859-1 msgOffset:1f6e size:4728 numLines:180 storeToken:8046 threadParent:ffffffff msgThreadId:1f6e ProtoThreadFlags:0 sender_name:2453|swe-web@some.COM
     // Can't add content-type/receieved etc to customDBHeaders which thunderbird already parsed and removed from header
-    
+
     let headerName = aSearchValue.toLowerCase();
     let splitIndex = aSearchValue.indexOf('~');
     if (splitIndex == -1) splitIndex = aSearchValue.indexOf('=');
@@ -158,7 +158,7 @@ function _getRegEx(aSearchValue) {
       return ( ( headerValue != '' ) ^ ( aSearchOp == nsMsgSearchOp.DoesntMatch ) );
     }
     headerName = aSearchValue.slice(0, splitIndex);
-    let regex = aSearchValue.slice(splitIndex + 1); 
+    let regex = aSearchValue.slice(splitIndex + 1);
     let headerValue = aMsgHdr.getStringProperty(headerName);
     return _getRegEx(regex).test(headerValue) ^ ( aSearchOp == nsMsgSearchOp.DoesntMatch );
   };
@@ -171,7 +171,7 @@ function _getRegEx(aSearchValue) {
       .toLocaleString('en-US', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false}) // "12/30/2012, 11:00:00"
       .replace(/(\d+)\/(\d+)\/(\d+),\s(.*)/, format);
   }
-  
+
   let dayTime = new customerTermBase("dayTime", [nsMsgSearchOp.IsBefore, nsMsgSearchOp.IsAfter]);
   dayTime.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     return (msgToLocaleFormat(aMsgHdr, '$4') > aSearchValue) ^ (aSearchOp == nsMsgSearchOp.IsBefore);
@@ -188,12 +188,12 @@ function _getRegEx(aSearchValue) {
   bccSearch.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     return (GlodaUtils.deMime(aMsgHdr.bccList).toLowerCase().indexOf(aSearchValue.toLowerCase()) != -1) ^ (aSearchOp == nsMsgSearchOp.DoesntContain);
   };
-  
+
   let fromRegex = new customerTermBase("fromRegex", [nsMsgSearchOp.Matches, nsMsgSearchOp.DoesntMatch]);
   fromRegex.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     return _getRegEx(aSearchValue).test(aMsgHdr.mime2DecodedAuthor) ^ ( aSearchOp == nsMsgSearchOp.DoesntMatch );
   };
-  
+
   let toRegex = new customerTermBase("toRegex", [nsMsgSearchOp.Matches, nsMsgSearchOp.DoesntMatch]);
   toRegex.match = function _match(aMsgHdr, aSearchValue, aSearchOp) {
     // https://bugzilla.mozilla.org/show_bug.cgi?id=522886
@@ -219,9 +219,9 @@ function _getRegEx(aSearchValue) {
     return ( match ^ (aSearchOp == nsMsgSearchOp.DoesntContain) );
   };
 
-// https://bugzilla.mozilla.org/show_bug.cgi?id=959309 - Finish JSMime 0.2 and land it on comm-central 
-// https://bugzilla.mozilla.org/show_bug.cgi?id=858337 - Implement header parsing in JSMime 
-// https://bugzilla.mozilla.org/show_bug.cgi?id=790855 - Make the new MIME parser charset-aware 
+// https://bugzilla.mozilla.org/show_bug.cgi?id=959309 - Finish JSMime 0.2 and land it on comm-central
+// https://bugzilla.mozilla.org/show_bug.cgi?id=858337 - Implement header parsing in JSMime
+// https://bugzilla.mozilla.org/show_bug.cgi?id=790855 - Make the new MIME parser charset-aware
   let emitter = function(msgData, aSearchValue, nameId) {
     let searchValue, regexp;
     let attachmentSearch = ( nameId == "attachmentNameOrType" );
@@ -281,7 +281,7 @@ function _getRegEx(aSearchValue) {
         }
       } catch(err) { ExpressionSearchLog.logException(err); }
     }; // startPart
-    
+
     me.deliverPartData = function(partNum, data) { // won't get called when bodyformat: 'none'
       try {
         if ( me.found ) return;
@@ -299,7 +299,7 @@ function _getRegEx(aSearchValue) {
             me.found = regexp.test(body);
             if ( !me.found ) {
               let parserUtils = Cc["@mozilla.org/parserutils;1"].getService(Ci.nsIParserUtils);
-              let plainText = parserUtils.convertToPlainText(body, 
+              let plainText = parserUtils.convertToPlainText(body,
                 Ci.nsIDocumentEncoder.OutputLFLineBreak | Ci.nsIDocumentEncoder.OutputNoScriptContent | Ci.nsIDocumentEncoder.OutputNoFramesContent | Ci.nsIDocumentEncoder.OutputBodyOnly, 0);
               me.found = regexp.test(plainText);
             }
@@ -337,7 +337,7 @@ function _getRegEx(aSearchValue) {
       return haveBodyMapping[folder.URI + " | " + aMsgHdr.messageKey] = false;
     }
   }
-  
+
   // case insensitive
   let attachmentNameOrType = new bodyTermBase("attachmentNameOrType", [nsMsgSearchOp.Contains, nsMsgSearchOp.DoesntContain], function(emitterInstance, aSearchOp) {
     if ( !emitterInstance.haveAttachment ) return false; // always return false when no attachment
@@ -365,7 +365,7 @@ function _getRegEx(aSearchValue) {
 let ExperssionSearchFilter = {
   name: "expression",
   domId: "expression-search-textbox",
-  
+
   // request to create virtual folder, set to the ExpressionSearchChrome when need to create
   latchQSFolderReq: 0,
 
@@ -400,7 +400,7 @@ let ExperssionSearchFilter = {
             topWin.document.getElementById("quick-filter-bar-filter-text-bar").collapsed = true;
         }
       }
-      
+
       // first remove trailing specifications if it's empty
       // then remove trailing ' and' but no remove of "f: and"
       let regExpReplace = new RegExp( '(?:^|\\s+)(?:' + ExpressionSearchTokens.allTokens + '):(?:\\(|)\\s*$', "i");
@@ -498,7 +498,7 @@ let ExperssionSearchFilter = {
 //!!var  {ExpressionSearchChrome} =  ChromeUtils.import("chrome://expressionsearch/content/es.js");
 
 ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
-    
+
     let total = Object.keys(haveBodyMapping).length;
     if ( total && aNode.value != '' ) {
       let haveBody = 0, haveNoBody = 0;
@@ -536,11 +536,11 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     // ExpressionSearchLog.log( 'aViewWrapper.dbView:'+aViewWrapper.dbView.viewType+":"+aViewWrapper.dbView.numMsgsInView + ":" + aViewWrapper.dbView.rowCount + ":" + aViewWrapper.dbView.viewFlags );
     if (!aFiltering || !aState || !aState.text || !aViewWrapper || aViewWrapper.dbView.numMsgsInView || aViewWrapper.dbView.rowCount /* Bug 574799 */ || !GlodaIndexer.enabled)
       return [aState, "nosale", false];
-      
+
     // since we're filtering, filtering on text, and there are no results, tell the upsell code to get bizzay
     return [aState, "upsell", false];
   },
-  
+
   addSearchTerm: function(aTermCreator, searchTerms, str, attr, op, is_or, grouping) {
     let aCustomId;
     if ( typeof(attr) == 'object' && attr.type == nsMsgSearchAttrib.Custom ) {
@@ -551,7 +551,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     term = aTermCreator.createTerm();
     term.attrib = attr;
     value = term.value;
-    // This is tricky - value.attrib must be set before actual values, from searchTestUtils.js 
+    // This is tricky - value.attrib must be set before actual values, from searchTestUtils.js
     value.attrib = attr;
 
     if (attr == nsMsgSearchAttrib.JunkPercent)
@@ -580,7 +580,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     term.value = value;
     term.op = op;
     term.booleanAnd = !is_or;
-    
+
     if (attr == nsMsgSearchAttrib.Custom)
       term.customId = aCustomId;
     else if (attr == nsMsgSearchAttrib.OtherHeader)
@@ -616,7 +616,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     }
     return "..unknown..";
   },
-  
+
   expression2gloda: function(searchValue) {
     searchValue = searchValue.replace(/^g:\s*/i,'');
     let regExp = new RegExp( "(?:^|\\b)(?:" + ExpressionSearchTokens.allTokens + "):", "g");
@@ -624,7 +624,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     searchValue = searchValue.replace(/(?:\b|^)(?:and|or)(?:\b|$)/g,'').replace(/[()]/g,'');
     return searchValue;
   },
-  
+
   getSearchTermString: function(searchTerms) {
     let condition = "";
     searchTerms.forEach( function(searchTerm, index, array) {
@@ -638,13 +638,13 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
       let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"] .createInstance(Ci.nsIScriptableUnicodeConverter);
       converter.charset = 'UTF-8';
       let termString = converter.ConvertToUnicode(searchTerm.termAsString); // termAsString is ACString
-      condition += " (" + termString + ")"; 
+      condition += " (" + termString + ")";
       // "}" may not balanced with "{", but who cares
       condition += searchTerm.endsGrouping && !searchTerm.beginsGrouping ? " }" : "";
     } );
     return condition;
   },
-  
+
   convertExpression: function(e,aTermCreator,searchTerms,was_or) {
     var is_not = false;
     if (e.kind == 'op' && e.tok == '-') {
@@ -755,7 +755,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
         else if (/^N/i.test(e.left.tok))
           e.left.tok = nsMsgMessageFlags.New;
         else if (/^(?:I|D)/i.test(e.left.tok))
-          e.left.tok = nsMsgMessageFlags.ImapDeleted;          
+          e.left.tok = nsMsgMessageFlags.ImapDeleted;
         else if (/^A/i.test(e.left.tok))
           e.left.tok = nsMsgMessageFlags.Attachment;
         else if (/^UnR/i.test(e.left.tok)) {
@@ -824,7 +824,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
         // check regex
         _getRegEx(e.left.tok);
       }
-      
+
       this.addSearchTerm(aTermCreator, searchTerms, e.left.tok, attr, op, was_or);
       return;
     }
@@ -873,7 +873,7 @@ ExpressionSearchChrome.showHideHelp(aDocument.defaultView, false);
     ExpressionSearchLog.info("Expression Search Terms: "+this.getSearchTermString(searchTerms));
     return null;
   },
-  
+
 } // end of ExperssionSearchFilter define
 QuickFilterManager.defineFilter(ExperssionSearchFilter);
 QuickFilterManager.textBoxDomId = ExperssionSearchFilter.domId;

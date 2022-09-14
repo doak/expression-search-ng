@@ -106,7 +106,7 @@ function ADVANCE_TOKEN() {
 
   // calculator only: handle all math single-character operator tokens
   if (this.calc) {
-      if ((this.str[0] == '+' || 
+      if ((this.str[0] == '+' ||
 	   this.str[0] == '*' || this.str[0] == '/')) {
 	  var tok = this.str[0];
 	  this.str = this.str.substr(1);
@@ -218,7 +218,7 @@ function TokenizerFactory()
 
     is_kind:      function(k) { return this.next_token.kind == k; },
     is_end:       function()      { return this.next_token.kind == ""; },
-    is_tok:       function(k,s) 
+    is_tok:       function(k,s)
                                   { return this.next_token.kind == k &&
 				           this.next_token.tok == s; },
     get_str:      function()      { return this.next_token.tok; }
@@ -250,7 +250,7 @@ function TokenizerFactory()
 // the user to do subject:-ambiguous.  Naturally this would be parsed
 // as (subject:-) and ambiguous, but that's just too common to allow
 // it to be wrong.
-// 
+//
 //
 
 function parse_expr(T, is_sexpr) {
@@ -262,7 +262,7 @@ function parse_expr(T, is_sexpr) {
       T.advance_token();
       break;
     }
-    if (T.is_end()) 
+    if (T.is_end())
       break;
     if (is_sexpr && T.is_kind('spec'))
       break;
@@ -424,7 +424,7 @@ function cparse_expr(T) {
     } else if (T.is_tok('g', ')')) {
       T.advance_token();
       break;
-    } else 
+    } else
       break;
   } while(1);
   return e;
@@ -434,10 +434,10 @@ function cparse_expr(T) {
 function expr_tostring(e) {
   if (e.kind == 'str') {
     return "'"+e.tok+"'";
-  } 
+  }
   if (e.kind == 'num') {
     return e.tok;
-  } 
+  }
   if (e.kind == 'op') {
     if (e.tok == '-')
       return "(not "+expr_tostring(e.left)+")";
@@ -445,7 +445,7 @@ function expr_tostring(e) {
       return "("+e.tok+" "+expr_tostring(e.left)+" "+expr_tostring(e.right)+")";
   }
   if (e.kind == 'spec') {
-    return "("+e.tok+" "+expr_tostring(e.left)+")"; 
+    return "("+e.tok+" "+expr_tostring(e.left)+")";
   }
   return "(unknown-"+e.kind+")";
 }
@@ -453,10 +453,10 @@ function expr_tostring(e) {
 function ExpressionSearchExprToStringInfix(e) {
   if (e.kind == 'str') {
     return "'"+e.tok+"'";
-  } 
+  }
   if (e.kind == 'num') {
     return e.tok;
-  } 
+  }
   if (e.kind == 'op' || e.kind == 'spec') {
     var l = "";
     var r = "";
@@ -491,7 +491,7 @@ function expr_deep_copy(e) {
   else if (e.right == undefined)
     return { kind: e.kind, tok: e.tok, left: expr_deep_copy(e.left) };
   else
-    return { kind: e.kind, tok: e.tok, 
+    return { kind: e.kind, tok: e.tok,
              left: expr_deep_copy(e.left),
              right: expr_deep_copy(e.right) };
 }
@@ -514,7 +514,7 @@ function expr_rotate(e) {
   var t = e.left;
   e.left = e.right;
   e.right = t;
-} 
+}
 
 // distribute (from (or a (not b))) to (or (from a) (not (from b)))
 function expr_distribute_spec(e,c) {
@@ -532,7 +532,7 @@ function expr_distribute_spec(e,c) {
   return e;
 }
 
-// strings without explicit specifiers need to be canonicalized to 
+// strings without explicit specifiers need to be canonicalized to
 // be searched for in all header fields.
 // convert "foo" to (or (or (f: foo) (t:foo)) (s: foo))
 // also expand (all: foo) to the above plus an outer
@@ -574,7 +574,7 @@ function expr_demorgan(e) {
     var under = e.left;
     if (under.kind == 'op') {
       if (under.tok == 'and' || under.tok == 'or')
-        return expr_demorgan({ kind: 'op', tok: under.tok == 'and' ? 'or' : 'and', 
+        return expr_demorgan({ kind: 'op', tok: under.tok == 'and' ? 'or' : 'and',
                                left: {kind: 'op', tok:'-', left: under.left},
                                right:{kind: 'op', tok:'-', left: under.right} });
       else if (under.tok == '-')

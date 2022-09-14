@@ -80,7 +80,7 @@
           </tooltip>
         </hbox>
         <hbox>
-          <button id="customHeadersButton" tooltip="esCustomDBHeadersTooltip" label="&expressionsearch.dialog.searchmoreheaders;" oncommand="ExpressionSearchCommon.showModalDialog(window, 'chrome://messenger/content/CustomHeaders.xhtml');"/> 
+          <button id="customHeadersButton" tooltip="esCustomDBHeadersTooltip" label="&expressionsearch.dialog.searchmoreheaders;" oncommand="ExpressionSearchCommon.showModalDialog(window, 'chrome://messenger/content/CustomHeaders.xhtml');"/>
           <html:input preference="mailnews.customHeaders" id="customHeadersText" readonly="true" tooltip="esCustomDBHeadersTooltip" flex="100" class="customHeadersShow"/>
           <tooltip id="esCustomDBHeadersTooltip">
             <description value="&expressionsearch.dialog.searchmoreheaderstooltip;"/>
@@ -154,20 +154,20 @@
           <image style="cursor:pointer;" src="donate-with-paypal.png" onclick="ExpressionSearchCommon.loadDonate('paypal');" />
           <label value="               " flex="100"/>
           <image style="cursor:pointer;" src="donate-with-alipay.png" tooltip='expressionsearch-perfDialogAlipayDonate' onclick="ExpressionSearchCommon.loadDonate('alipay');" />
- 
+
         </hbox>
         <label/>
         <hbox>
           <label class='textlink' value="&expressionsearch.option.help;" onclick="ExpressionSearchCommon.loadURL('expressionsearch.helpfile', 'expressionsearch.help');"/><label/>
           <label class='textlink' value="&expressionsearch.option.issues;" onclick="ExpressionSearchCommon.loadUseProtocol('https://github.com/opto/expression-search-NG/issues');"/><label/>
 <!--         <label class='textlink' value="&expressionsearch.option.email;" onclick="ExpressionSearchCommon.sendEmailWithTB('mailto:opera.wang+es@gmail.com?subject=About%20Expression%20Search');"/><label/>
---> 
+-->
           <label class='textlink' value='&expressionsearch.option.crash;' onclick="ExpressionSearchCommon.loadTab('about:crashes');"/>
         </hbox>
       </vbox>
     </html:fieldset>
   </vbox>
-  
+
   <popupset>
     <tooltip id="expressionsearch-perfDialogAlipayDonate">
       <image src="qr-alipay.png"/>

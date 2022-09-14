@@ -1,6 +1,6 @@
 //Added for TB 78+ (c) by Klaus Buecher/opto 2020-2021
 //License: MPL 2
-messenger.BootstrapLoader.registerChromeUrl([ 
+messenger.BootstrapLoader.registerChromeUrl([
     ["content", "expressionsearch",           "content/"],
     ["locale",  "expressionsearch", "en-US",  "locale/en-US/"],
  //   ["locale",  "quicktext", "ca",     "chrome/locale/ca/"],

@@ -65,7 +65,7 @@ var ExpressionSearchCommon = {
     if (!(uri instanceof Ci.nsIURI)) {
       uri = Services.io.newURI(url);
     }
-    
+
     Cc["@mozilla.org/uriloader/external-protocol-service;1"]
       .getService(Ci.nsIExternalProtocolService)
       .loadURI(uri);

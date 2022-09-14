@@ -29,7 +29,7 @@ function loadIntoWindow(window) {
   ExpressionSearchChrome.init(); // will and add my filter, and TB want the domID exists when filter registered, so only called when have window ready
   ExpressionSearchChrome.Load(window);
 }
- 
+
 var windowListener = {
   onOpenWindow: function(aWindow) {
     let onLoadWindow = function() {
@@ -67,7 +67,7 @@ function startup(aData, aReason) {
   if ( !sss.sheetRegistered(userCSS, sss.USER_SHEET) ) sss.loadAndRegisterSheet(userCSS, sss.USER_SHEET); // will be unregister when shutdown
   console.log("end startup");
 }
- 
+
 function shutdown(aData, aReason) {
   // When the application is shutting down we normally don't have to clean up any UI changes made
   if (aReason == APP_SHUTDOWN) return;
@@ -75,7 +75,7 @@ function shutdown(aData, aReason) {
   try {
     if ( sss.sheetRegistered(userCSS, sss.USER_SHEET) ) sss.unregisterSheet(userCSS, sss.USER_SHEET);
   } catch (err) {Cu.reportError(err);}
-  
+
   try {
     Services.obs.notifyObservers(null, "startupcache-invalidate", null); //ADDON_DISABLE ADDON_UNINSTALL ADDON_UPGRADE ADDON_DOWNGRADE
     Services.obs.removeObserver(windowListener, observeEvent);
