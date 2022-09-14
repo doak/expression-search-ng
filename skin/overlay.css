@@ -1,5 +1,5 @@
 .textlink {
-  color: blue;
+  color: lightblue;
   cursor: pointer;
   text-decoration: underline;
 }
@@ -17,23 +17,23 @@
 
 .tooltip-token {
   font-weight: bold;
-  color: green;
+  color: lightgreen;
 }
 
 .tooltip-info {
-  color: blue;
+  color: white;
 }
 
 .tooltip-match {
-  color: purple;
+  color: yellow;
 }
 
 .tooltip-term {
-  color: grey;
+  color: white;
 }
 
 .customHeadersShow{
-  color: grey;
+  color: white;
 }
 
 .expressionsearch_pref_input {
