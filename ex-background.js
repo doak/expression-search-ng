@@ -1,28 +1,67 @@
-//Added for TB 78+ (c) by Klaus Buecher/opto 2020-2021
-//License: MPL 2
-messenger.BootstrapLoader.registerChromeUrl([
-    ["content", "expressionsearch",           "content/"],
-    ["locale",  "expressionsearch", "en-US",  "locale/en-US/"],
- //   ["locale",  "quicktext", "ca",     "chrome/locale/ca/"],
-    ["locale",  "expressionsearch", "de",     "locale/de/"],
-    /*,
-    ["locale",  "quicktext", "es-MX",  "chrome/locale/es-MX/"],
-    ["locale",  "quicktext", "es",     "chrome/locale/es/"],
-    ["locale",  "quicktext", "fr",     "chrome/locale/fr/"],
+/*
+ *
+ * Code for TB 78 or later: Creative Commons (CC BY-ND 4.0):
+ *      Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
+ *
+ * Copyright: Klaus Buecher/opto 2021
+ * Contributors:  see Changes.txt
  */
-    ["resource",  "expressionsearch",  ""]
 
-]);
+messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
+  switch (info.command) {
+    case "showPage":
+    switch (info.type) {
+        case "tab":
+          info.createData.url = translateURL(info.url, info.anchor);
+          browser.tabs.create(info.createData);
+          break;
+        case "window":
+          info.createData.url = translateURL(info.url, info.anchor);
+          browser.windows.create(info.createData);
+          break;
+        case "external":
+          browser.windows.openDefaultBrowser(info.url);
+          break;
+      }
+      return;
+  }
+});
 
+messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
+  if (temporary) {
+    // skip during development
+    //   return;
+  }
 
+  switch (reason) {
+    case "install":
+      {
+        const url = messenger.runtime.getURL("html/installed.html");
+        await messenger.tabs.create({ url });
+      }
+      break;
 
+    case "update":
+      {
+        const url = messenger.runtime.getURL("html/update.html");
+        await messenger.tabs.create({ url });
+      }
+      break;
+  }
+});
 
+async function main() {
+  messenger.ExpressionSearch.initPrefs();
 
-let url = messenger.runtime.getURL("content/help_bckg.html");
-//await browser.tabs.create({ url });
-messenger.windows.create({ url, type: "popup", width: 910, height: 750, });
+  const windows = await messenger.windows.getAll();
+  for (let window of windows) {
+    // initWindow() knows if the window needs init.
+    await messenger.ExpressionSearch.initWindow(window.id);
+  }
+  messenger.windows.onCreated.addListener((window) => {
+    // initWindow() knows if the window needs init.
+    messenger.ExpressionSearch.initWindow(window.id);
+  });
+}
 
-
-messenger.BootstrapLoader.registerDefaultPrefs("content/defaults.js");
-
- messenger.BootstrapLoader.registerBootstrapScript("bootstrap.js");
+main();
