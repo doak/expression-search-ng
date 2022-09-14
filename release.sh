@@ -19,11 +19,12 @@ createXpi() {
     local archive
     local content=(
         api
-        bootstrap.js
-        content
-        icon.png
-        locale
+        ex-background.js
+        html
+        _locales
         manifest.json
+        modules
+        scripts
         skin
     )
     
