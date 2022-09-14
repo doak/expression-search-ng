@@ -4,13 +4,13 @@ Expression Search is a Thunderbird addon that add search features like Gmail
 
 Powerful message searching through expressions. Type "from:fred to:tom" or "f:fred t:tom" to see all messages from Fred to Tom in the current view. Support 'regular expressions' and 'click to search'.
 
-This is an update for Thunderbird 78.
+This is an update for Thunderbird 78-102.
 
 
 The original Addon by Opera Wang can be installed from AMO for up to TB 60:
 https://addons.thunderbird.net/en-US/thunderbird/addon/gmailui/
 
-This is a fork with updates for Thunderbird 78.
+This is a fork with updates for Thunderbird 78-102.
 
 Documentation for TB 78 can be found in the help file: click the search glass in the status bar and select help.
 
