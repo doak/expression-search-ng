@@ -1,14 +1,96 @@
 // Original by Ken Mixter for GMailUI, which is "GMailUI is completely free to use as you wish."
 // Opera Wang, 2010/1/15
 // GPL V3 / MPL
+//Changes for TB 78+ (c) by Klaus Buecher/opto 2020-2021
 "use strict";
+var EXPORTED_SYMBOLS = ["ExpressionSearchChrome"];
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Timer.jsm");
+//Cu.import("resource://gre/modules/Timer.jsm");
+var  {clearTimeout, setTimeout} = ChromeUtils.import("resource://gre/modules/Timer.jsm");
+var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+console.log("vor import ExpressionSearchLog");
+var  {ExpressionSearchLog} =  ChromeUtils.import("chrome://expressionsearch/content/log.js"); // load log first
+console.log("nach import ExpressionSearchLog", ExpressionSearchLog);
+var {ExpressionSearchaop} = ChromeUtils.import("chrome://expressionsearch/content/aop.js");
+ 
+
+var {ExpressionSearchCommon} = ChromeUtils.import("chrome://expressionsearch/content/common.js");
+  
+
+
+
+    /* https://bugzilla.mozilla.org/show_bug.cgi?id=1383215#c24
+    There are two ways that we currently support packaging omnijar:
+    1) Separate JAR files for toolkit (GRE) content and app-specific content.
+    2) One JAR file containing both app-specific and toolkit content.
+    
+    Firefox uses the former (but used to use the latter), and Thunderbird uses the latter.
+    In case 2, resource:/// and resource://gre/ point to the same place, so it's technically possible to refer to app or toolkit content by two separate URLs,
+    and it's easy to carelessly use the wrong one. We had a bunch of these issues (especially with add-ons) when we switched layouts.
+    
+    But the code that's using resource://gre/ URLs for app content, or vice versa, is still technically wrong. */
+    
+    //Cu.import("chrome://expressionsearch/content/gmailuiParse.js");
+    var {ExpressionSearchComputeExpression, ExpressionSearchExprToStringInfix, ExpressionSearchTokens} = ChromeUtils.import("chrome://expressionsearch/content/gmailuiParse.js");
+
+    //.import("chrome://expressionsearch/content/aop.js");
+  //  //Cu.import("chrome://expressionsearch/content/common.js");
+ //   var {ExpressionSearchCommon} = ChromeUtils.import("chrome://expressionsearch/content/common.js");
+    
+    // for hook functions for attachment search
+    var { SearchSpec } = ChromeUtils.import("resource:///modules/SearchSpec.jsm");
+      // general services
+      var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+      var { MailServices } = ChromeUtils.import("resource:///modules/MailServices.jsm");
+         // for create quick search folder
+//Cu.import("resource:///modules/virtualFolderWrapper.js"); // for VirtualFolderHelper
+    var { VirtualFolderHelper } = ChromeUtils.import(
+      "resource:///modules/VirtualFolderWrapper.jsm"
+    );
+    
+   
+   // Cu.import("resource:///modules/iteratorUtils.jsm");
+  //  Cu.import("resource:///modules/gloda/utils.js"); // for GlodaUtils.parseMailAddresses
+//  var {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/glodautils.jsm");
+  var { GlodaUtils } = ChromeUtils.import(
+    "resource:///modules/gloda/GlodaUtils.jsm"
+  );
+    //Cu.import("resource://gre/modules/AddonManager.jsm");
+    var { AddonManager } = ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
+    // need to know whether gloda enabled
+  //!!!
+ //   Cu.import("resource:///modules/gloda/indexer.js");
+  
+ 
+// XXX we need to know whether the gloda indexer is enabled for upsell reasons,
+// but this should really just be exposed on the main Gloda public interface.
+var { GlodaIndexer } = ChromeUtils.import(
+  "resource:///modules/gloda/GlodaIndexer.jsm"
+);
+
+ 
+ 
+ 
+ // to call gloda search, actually no need
+    //Cu.import("resource:///modules/gloda/msg_search.js");
+    //if (!ExperssionSearchFilter  )     
+ //   console.log("vor  import ExperssionSearchFilter", ExperssionSearchFilter);
+ //  var {ExperssionSearchFilter} = ChromeUtils.import("chrome://expressionsearch/content/ExpressionSearchFilter1.js");
+ //   console.log("end importModulesit", ExperssionSearchFilter);
+ 
+
+
+
+
+
+
+
+
+
 
 const XULNS = 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
 const statusbarIconID = "expression-search-status-bar";
-const statusbarIconSrc = 'chrome://expressionsearch/skin/statusbar_icon.png';
+const statusbarIconSrc = 'resource://expressionsearch/skin/statusbar_icon.png';
 const popupsetID = "expressionSearch-statusbar-popup";
 const contextMenuID = "expression-search-context-menu";
 const tooltipId = "expression-search-tooltip";
@@ -16,7 +98,8 @@ const oldAPI_61 = Services.vc.compare(Services.appinfo.platformVersion, '61.0a1'
 const oldAPI_65 = Services.vc.compare(Services.appinfo.platformVersion, '65.0a1') < 0;
 const oldAPI_67 = Services.vc.compare(Services.appinfo.platformVersion, '67.0a1') < 0;
 
-var EXPORTED_SYMBOLS = ["ExpressionSearchChrome"];
+//var EXPORTED_SYMBOLS = ["ExpressionSearchChrome"];
+let opstrings = Services.strings.createBundle('chrome://expressionsearch/locale/ExpressionSearch.properties');
 var ExpressionSearchChrome = {
   // if last key is Enter
   isEnter: 0,
@@ -26,14 +109,15 @@ var ExpressionSearchChrome = {
   needMoveId: "quick-filter-bar-main-bar",
   originalFilterId: "qfb-qs-textbox",
   textBoxDomId: "expression-search-textbox",
-  strBundle: Services.strings.createBundle('chrome://expressionsearch/locale/ExpressionSearch.properties'),
+  strBundle: opstrings,//Services.strings.createBundle('chrome://expressionsearch/locale/ExpressionSearch.properties'),
   
   prefs: null, // preference object
   options: {}, // preference strings
 
   loaded: 0,
   init: function() {
-    Cu.import("chrome://expressionsearch/content/log.js"); // load log first
+    debugger;
+  //  var  {ExpressionSearchLog} =  ChromeUtils.import("chrome://expressionsearch/content/log.js"); // load log first
     if ( this.loaded ) {
       if ( !this.prefs && ExpressionSearchLog ) {
         ExpressionSearchLog.log("Expression Search is NOT restartless! Please restart Thunderbird!", 1);
@@ -61,32 +145,52 @@ var ExpressionSearchChrome = {
     
     But the code that's using resource://gre/ URLs for app content, or vice versa, is still technically wrong. */
     
-    Cu.import("chrome://expressionsearch/content/gmailuiParse.js");
-    Cu.import("chrome://expressionsearch/content/aop.js");
-    Cu.import("chrome://expressionsearch/content/common.js");
+    //Cu.import("chrome://expressionsearch/content/gmailuiParse.js");
+    //var {ExpressionSearchComputeExpression, ExpressionSearchExprToStringInfix, ExpressionSearchTokens} = ChromeUtils.import("chrome://expressionsearch/content/gmailuiParse.js");
+
+    //.import("chrome://expressionsearch/content/aop.js");
+  //  //Cu.import("chrome://expressionsearch/content/common.js");
+  //  var {ExpressionSearchCommon} = ChromeUtils.import("chrome://expressionsearch/content/common.js");
+    var {ExperssionSearchFilter} = ChromeUtils.import("chrome://expressionsearch/content/ExpressionSearchFilter.js");
+    /*  
     // for hook functions for attachment search
-    try {
-      Cu.import("resource:///modules/SearchSpec.jsm");
-    } catch (err) {
-      Cu.import("resource:///modules/searchSpec.js");
-    }
-    // general services
-    Cu.import("resource://gre/modules/Services.jsm");
-    try {
-      Cu.import("resource:///modules/MailServices.jsm");
-    } catch (err) {
-      Cu.import("resource:///modules/mailServices.js");
-    }
-    // for create quick search folder
-    Cu.import("resource:///modules/virtualFolderWrapper.js"); // for VirtualFolderHelper
-    Cu.import("resource:///modules/iteratorUtils.jsm");
-    Cu.import("resource:///modules/gloda/utils.js"); // for GlodaUtils.parseMailAddresses
-    Cu.import("resource://gre/modules/AddonManager.jsm");
+    var { SearchSpec } = ChromeUtils.import("resource:///modules/SearchSpec.jsm");
+      // general services
+      var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+      var { MailServices } = ChromeUtils.import("resource:///modules/MailServices.jsm");
+         // for create quick search folder
+//Cu.import("resource:///modules/virtualFolderWrapper.js"); // for VirtualFolderHelper
+    var { VirtualFolderHelper } = ChromeUtils.import(
+      "resource:///modules/VirtualFolderWrapper.jsm"
+    );
+    
+   
+   // Cu.import("resource:///modules/iteratorUtils.jsm");
+  //  Cu.import("resource:///modules/gloda/utils.js"); // for GlodaUtils.parseMailAddresses
+  var {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/glodautils.jsm");
+    //Cu.import("resource://gre/modules/AddonManager.jsm");
+    var { AddonManager } = ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
     // need to know whether gloda enabled
-    Cu.import("resource:///modules/gloda/indexer.js");
-    // to call gloda search, actually no need
+  //!!!
+ //   Cu.import("resource:///modules/gloda/indexer.js");
+  
+ 
+// XXX we need to know whether the gloda indexer is enabled for upsell reasons,
+// but this should really just be exposed on the main Gloda public interface.
+var { GlodaIndexer } = ChromeUtils.import(
+  "resource:///modules/gloda/GlodaIndexer.jsm"
+);
+
+ 
+ 
+ 
+ // to call gloda search, actually no need
     //Cu.import("resource:///modules/gloda/msg_search.js");
-    Cu.import("chrome://expressionsearch/content/ExpressionSearchFilter.js");
+    var {ExperssionSearchFilter} = ChromeUtils.import("chrome://expressionsearch/content/ExpressionSearchFilter.js");
+    console.log("end importModulesit");
+
+
+  */  
   },
     
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1415567 Remove {get,set}ComplexValue use of nsISupportsString in Thunderbird
@@ -491,6 +595,7 @@ var ExpressionSearchChrome = {
   },
   
   onSearchKeyPress: function(event){
+    debugger;
     let self = this;
     // defer the call or this.value is still the old value, not updated with event.char yet
     setTimeout( function(){ ExpressionSearchChrome.delayedOnSearchKeyPress.call(self,event); }, 0);
@@ -529,11 +634,13 @@ var ExpressionSearchChrome = {
       return;
     }
 
-    // TB69, for customElements.define("search-textbox", MozSearchTextbox, { extends: "textbox" });
-    let aNode = doc.createElementNS(XULNS, "textbox", {is: "search-textbox"});
+    // TB69, for    customElements.define("search-textbox", MozSearchTextbox, { extends: "textbox" });
+ //   let aNode = doc.createElementNS(XULNS, "search-textbox", {is: "search-textbox"});
+  //  let aNode = doc.createElementNS(XULNS, "search-textbox", {is: "search-textbox"});
+    let aNode = doc.createXULElement("search-textbox");//, {is: "search-textbox"});
     aNode.id = this.textBoxDomId;
     aNode.setAttribute("class", "searchBox");
-    aNode.setAttribute("type", "search");
+   // aNode.setAttribute("type", "search");
     aNode.setAttribute("emptytextbase", this.strBundle.GetStringFromName("textbox.emptyText.base"));
     aNode.setAttribute("timeout", 1000);
     aNode.setAttribute("maxlength", 2048);
@@ -891,6 +998,7 @@ var ExpressionSearchChrome = {
       let description = doc.createElementNS(XULNS, "description");
       description.id = tooltipId + "-line" + i;
       description.setAttribute('class', 'tooltip-' + classes[i-1]);
+      //debugger;
       if ( i == 1 || i == 2) {
         description.textContent = this.strBundle.GetStringFromName("info.helpLine"+i);
       } else {
@@ -996,7 +1104,7 @@ var ExpressionSearchChrome = {
             me.firstRunAction.apply(me);
           });
         } else {
-          AddonManager.getAddonByID("{03EF8A6E-C972-488f-92FA-98ABC2C9F8B9}").then(addon => {
+          AddonManager.getAddonByID("expressionsearch@opto.one").then(addon => {
             me.options.current_version = addon.version;
             me.firstRunAction.apply(me);
           });
@@ -1057,13 +1165,15 @@ var ExpressionSearchChrome = {
       ["about:crashes", "", function(){ ExpressionSearchCommon.loadTab('about:crashes'); }],
       ["about:memory", "", function(){ ExpressionSearchCommon.loadURL('about:memory?verbose'); }],
       [''], // items before seprator and the seprator it self will only shown if verbose
-      [this.strBundle.GetStringFromName("dialog.settings"), "chrome://messenger/skin/accountcentral/account-settings.png", function(){ ExpressionSearchCommon.loadURL('chrome://expressionsearch/content/esPrefDialog.xul'); }],
+      [this.strBundle.GetStringFromName("dialog.settings"), "chrome://messenger/skin/accountcentral/account-settings.png", function(){ ExpressionSearchCommon.loadURL('chrome://expressionsearch/content/esPrefDialog.xhtml'); }],
       [this.strBundle.GetStringFromName("option.help"), "chrome://global/skin/icons/question-64.png", function(){ ExpressionSearchCommon.loadURL('expressionsearch.helpfile', 'expressionsearch.help'); }],
       [this.strBundle.GetStringFromName("donate.label"), this.strBundle.GetStringFromName("donate.image"), function(){ ExpressionSearchCommon.loadDonate(ExpressionSearchChrome.strBundle.GetStringFromName("donate.pay")); }],
-      ["Addon @ Mozilla", "chrome://mozapps/skin/extensions/extensionGeneric.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://addons.thunderbird.net/en-US/thunderbird/addon/gmailui"); }],
-      ["Addon @ GitHub", "chrome://awsomeAutoArchive/content/github.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://github.com/wangvisual/expression-search"); }],
-      ["Report Bug", "chrome://global/skin/icons/information-32.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://github.com/wangvisual/expression-search/issues"); }],
-      [this.strBundle.GetStringFromName("about.about"), "chrome://expressionsearch/skin/statusbar_icon.png", function(){ ExpressionSearchCommon.loadURL('chrome://expressionsearch/content/about.xul'); }],
+ //     ["Addon @ Mozilla", "chrome://mozapps/skin/extensions/extensionGeneric.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://addons.thunderbird.net/en-US/thunderbird/addon/gmailui"); }],
+ //     ["Addon @ GitHub", "chrome://awsomeAutoArchive/content/github.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://github.com/opto/expression-search-NG"); }],
+      ["Addon @ GitHub", "chrome://mozapps/skin/extensions/extensionGeneric.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://github.com/opto/expression-search-NG"); }],
+      ["Report Bug", "chrome://global/skin/icons/information-32.png", function(){ ExpressionSearchCommon.loadUseProtocol("https://github.com/opto/expression-search-NG/issues"); }],
+      [this.strBundle.GetStringFromName("about.about"), "resource://expressionsearch/skin/statusbar_icon.png", function(){ ExpressionSearchCommon.loadURL('chrome://expressionsearch/content/about.xhtml'); }],
+//      [this.strBundle.GetStringFromName("about.about"), "resource://expressionsearch/skin/statusbar_icon.png", function(){ ExpressionSearchCommon.loadURL('chrome://messenger/content/SearchDialog.xhtml'); }],
     ].forEach( function(menu) {
       ExpressionSearchChrome.addMenuItem(menu, doc, menupopup);
     } );

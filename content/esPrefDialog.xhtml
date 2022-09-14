@@ -28,15 +28,15 @@
         <checkbox preference="extensions.expressionsearch.enable_verbose_info" label="&expressionsearch.option.enable_verbose_info;"/>
         <hbox align='center'>
           <checkbox preference="extensions.expressionsearch.enable_statusbar_info" label="&expressionsearch.option.enable_statusbar_info1;"/>
-          <textbox class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.statusbar_info_showtime" hidespinbuttons="true" size='2'/>
+          <html:input class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.statusbar_info_showtime" hidespinbuttons="true" size='2'/>
           <label value="&expressionsearch.option.enable_statusbar_info2;"/>
-          <textbox class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.statusbar_info_hidetime" hidespinbuttons="true" size='2'/>
+          <html:input class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.statusbar_info_hidetime" hidespinbuttons="true" size='2'/>
           <label value="&expressionsearch.option.enable_statusbar_info3;"/>
         </hbox>
         <checkbox preference="extensions.expressionsearch.load_virtual_folder_in_tab" label="&expressionsearch.option.load_virtual_folder_in_tab;"/>
         <hbox align='center' tooltip="esSearchTimeout">
           <label value='&expressionsearch.option.search_timeout;' />
-          <textbox class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.search_timeout" hidespinbuttons="true" size='4'/>
+          <html:input class='expressionsearch_pref_input' type="number" min="0" preference="extensions.expressionsearch.search_timeout" hidespinbuttons="true" size='4'/>
           <label value='&expressionsearch.option.ms;' />
           <tooltip id="esSearchTimeout">
             <description value="&expressionsearch.option.search_timeout.tooltip_1;"/>
@@ -80,8 +80,8 @@
           </tooltip>
         </hbox>
         <hbox>
-          <button id="customHeadersButton" tooltip="esCustomDBHeadersTooltip" label="&expressionsearch.dialog.searchmoreheaders;" oncommand="ExpressionSearchCommon.showModalDialog(window, 'chrome://messenger/content/CustomHeaders.xul');"/> 
-          <textbox preference="mailnews.customHeaders" id="customHeadersText" readonly="true" tooltip="esCustomDBHeadersTooltip" flex="100" class="customHeadersShow"/>
+          <button id="customHeadersButton" tooltip="esCustomDBHeadersTooltip" label="&expressionsearch.dialog.searchmoreheaders;" oncommand="ExpressionSearchCommon.showModalDialog(window, 'chrome://messenger/content/CustomHeaders.xhtml');"/> 
+          <html:input preference="mailnews.customHeaders" id="customHeadersText" readonly="true" tooltip="esCustomDBHeadersTooltip" flex="100" class="customHeadersShow"/>
           <tooltip id="esCustomDBHeadersTooltip">
             <description value="&expressionsearch.dialog.searchmoreheaderstooltip;"/>
             <description class='tooltip-info' id="tooltip_customHeaders" preference="mailnews.customHeaders" preference-editable="true"/>
@@ -135,11 +135,11 @@
           <rows>
             <row>
               <label value="&expressionsearch.dialog.c2s_match;"/>
-              <textbox preference="extensions.expressionsearch.c2s_regexpMatch" id="c2sMatch"/>
+              <html:input preference="extensions.expressionsearch.c2s_regexpMatch" id="c2sMatch"/>
             </row>
             <row>
               <label value="&expressionsearch.dialog.c2s_replace;"/>
-              <textbox preference="extensions.expressionsearch.c2s_regexpReplace" id="c2sReplace"/>
+              <html:input preference="extensions.expressionsearch.c2s_regexpReplace" id="c2sReplace"/>
             </row>
           </rows>
         </grid>
@@ -154,12 +154,14 @@
           <image style="cursor:pointer;" src="donate-with-paypal.png" onclick="ExpressionSearchCommon.loadDonate('paypal');" />
           <label value="               " flex="100"/>
           <image style="cursor:pointer;" src="donate-with-alipay.png" tooltip='expressionsearch-perfDialogAlipayDonate' onclick="ExpressionSearchCommon.loadDonate('alipay');" />
+ 
         </hbox>
         <label/>
         <hbox>
           <label class='textlink' value="&expressionsearch.option.help;" onclick="ExpressionSearchCommon.loadURL('expressionsearch.helpfile', 'expressionsearch.help');"/><label/>
-          <label class='textlink' value="&expressionsearch.option.issues;" onclick="ExpressionSearchCommon.loadUseProtocol('https://github.com/wangvisual/expression-search/issues');"/><label/>
-          <label class='textlink' value="&expressionsearch.option.email;" onclick="ExpressionSearchCommon.sendEmailWithTB('mailto:opera.wang+es@gmail.com?subject=About%20Expression%20Search');"/><label/>
+          <label class='textlink' value="&expressionsearch.option.issues;" onclick="ExpressionSearchCommon.loadUseProtocol('https://github.com/opto/expression-search-NG/issues');"/><label/>
+<!--         <label class='textlink' value="&expressionsearch.option.email;" onclick="ExpressionSearchCommon.sendEmailWithTB('mailto:opera.wang+es@gmail.com?subject=About%20Expression%20Search');"/><label/>
+--> 
           <label class='textlink' value='&expressionsearch.option.crash;' onclick="ExpressionSearchCommon.loadTab('about:crashes');"/>
         </hbox>
       </vbox>
@@ -172,9 +174,11 @@
     </tooltip>
   </popupset>
 </vbox>
-<!--script type="application/x-javascript" src="resource://expressionsearch/log.js"/-->
+<!--script type="application/x-javascript" src="resource://expressionsearch/log.js"/  -->
+<!--gg-->
 <script type="application/x-javascript" src="chrome://global/content/preferencesBindings.js"/>
 <script type="application/x-javascript" src="chrome://messenger/content/folder-menupopup.js"/>
 <script type="application/x-javascript" src="chrome://expressionsearch/content/common.js"/>
 <script type="application/x-javascript" src="chrome://expressionsearch/content/esPrefDialog.js"/>
+
 </dialog>
