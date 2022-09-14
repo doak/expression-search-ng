@@ -90,7 +90,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		else if (advice.type == _around) {
 			aspect = function() {
 				var invocation = { object: this, args: Array.prototype.slice.call(arguments) };
-				return advice.value.apply(invocation.object, [{ arguments: invocation.args, method: method, proceed : 
+				return advice.value.apply(invocation.object, [{ arguments: invocation.args, method: method, proceed :
 					function() {
 						return old.apply(invocation.object, invocation.args);
 					}
@@ -98,7 +98,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 			};
 		}
 
-		aspect.unweave = function() { 
+		aspect.unweave = function() {
 			source[method] = old;
 			source = aspect = old = null;
 		};
@@ -113,7 +113,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 	 * Private method search
 	 */
 	var search = function(source, pointcut, advice) {
-		
+
 		var methods = [];
 
 		for (var method in source) {
@@ -155,7 +155,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 			for (var i in methods)
 				advices[advices.length] = weaveOne(methods[i].source, methods[i].method, methods[i].advice);
 
-		} 
+		}
 		else
 		{
 			// Return as an array of one element
@@ -166,28 +166,28 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 	};
 
-	ExpressionSearchaop = 
+	ExpressionSearchaop =
 	{
 		/**
-		 * Creates an advice after the defined point-cut. The advice will be executed after the point-cut method 
+		 * Creates an advice after the defined point-cut. The advice will be executed after the point-cut method
 		 * has completed execution successfully, and will receive one parameter with the result of the execution.
 		 * This function returns an array of weaved aspects (Function).
 		 *
-		 * @example jQuery.aop.after( {target: window, method: 'MyGlobalMethod'}, function(result) { 
-		 *                alert('Returned: ' + result); 
+		 * @example jQuery.aop.after( {target: window, method: 'MyGlobalMethod'}, function(result) {
+		 *                alert('Returned: ' + result);
 		 *                return result;
 		 *          } );
 		 * @result Array<Function>
 		 *
-		 * @example jQuery.aop.after( {target: String, method: 'indexOf'}, function(index) { 
-		 *                alert('Result found at: ' + index + ' on:' + this); 
+		 * @example jQuery.aop.after( {target: String, method: 'indexOf'}, function(index) {
+		 *                alert('Result found at: ' + index + ' on:' + this);
 		 *                return index;
 		 *          } );
 		 * @result Array<Function>
 		 *
 		 * @name after
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved. Regex are supported, but not on built-in objects.
 		 * @param Function advice Function containing the code that will get called after the execution of the point-cut. It receives one parameter
 		 *                        with the result of the point-cut's execution. The function can choose to return this same value or a different one.
@@ -201,18 +201,18 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		},
 
 		/**
-		 * Creates an advice after the defined point-cut only for unhandled exceptions. The advice will be executed 
-		 * after the point-cut method only if the execution failed and an exception has been thrown. It will receive one 
+		 * Creates an advice after the defined point-cut only for unhandled exceptions. The advice will be executed
+		 * after the point-cut method only if the execution failed and an exception has been thrown. It will receive one
 		 * parameter with the exception thrown by the point-cut method.
 		 * This function returns an array of weaved aspects (Function).
 		 *
-		 * @example jQuery.aop.afterThrow( {target: String, method: 'indexOf'}, function(exception) { 
-		 *                alert('Unhandled exception: ' + exception); 
+		 * @example jQuery.aop.afterThrow( {target: String, method: 'indexOf'}, function(exception) {
+		 *                alert('Unhandled exception: ' + exception);
 		 *                return -1;
 		 *          } );
 		 * @result Array<Function>
 		 *
-		 * @example jQuery.aop.afterThrow( {target: calculator, method: 'Calculate'}, function(exception) { 
+		 * @example jQuery.aop.afterThrow( {target: calculator, method: 'Calculate'}, function(exception) {
 		 *                console.log('Unhandled exception: ' + exception);
 		 *                throw exception;
 		 *          } );
@@ -220,7 +220,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 *
 		 * @name afterThrow
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved. Regex are supported, but not on built-in objects.
 		 * @param Function advice Function containing the code that will get called after the execution of the point-cut. It receives one parameter
 		 *                        with the exception thrown by the point-cut method.
@@ -234,8 +234,8 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		},
 
 		/**
-		 * Creates an advice after the defined point-cut. The advice will be executed after the point-cut method 
-		 * regardless of its success or failure, and it will receive two parameters: one with the 
+		 * Creates an advice after the defined point-cut. The advice will be executed after the point-cut method
+		 * regardless of its success or failure, and it will receive two parameters: one with the
 		 * result of a successful execution or null, and another one with the exception thrown or null.
 		 * This function returns an array of weaved aspects (Function).
 		 *
@@ -249,10 +249,10 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 *
 		 * @name afterFinally
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved. Regex are supported, but not on built-in objects.
 		 * @param Function advice Function containing the code that will get called after the execution of the point-cut regardless of its success or failure.
-		 *                        It receives two parameters, the first one with the result of a successful execution or null, and the second one with the 
+		 *                        It receives two parameters, the first one with the result of a successful execution or null, and the second one with the
 		 *                        exception or null.
 		 *
 		 * @type Array<Function>
@@ -265,12 +265,12 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 
 		/**
-		 * Creates an advice before the defined point-cut. The advice will be executed before the point-cut method 
+		 * Creates an advice before the defined point-cut. The advice will be executed before the point-cut method
 		 * but cannot modify the behavior of the method, or prevent its execution.
 		 * This function returns an array of weaved aspects (Function).
 		 *
-		 * @example jQuery.aop.before( {target: window, method: 'MyGlobalMethod'}, function() { 
-		 *                alert('About to execute MyGlobalMethod'); 
+		 * @example jQuery.aop.before( {target: window, method: 'MyGlobalMethod'}, function() {
+		 *                alert('About to execute MyGlobalMethod');
 		 *          } );
 		 * @result Array<Function>
 		 *
@@ -281,7 +281,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 *
 		 * @name before
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved. Regex are supported, but not on built-in objects.
 		 * @param Function advice Function containing the code that will get called before the execution of the point-cut.
 		 *
@@ -300,20 +300,20 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 * This function returns an array of weaved aspects (Function).
 		 *
 		 * @example jQuery.aop.around( {target: window, method: 'MyGlobalMethod'}, function(invocation) {
-		 *                alert('# of Arguments: ' + invocation.arguments.length); 
-		 *                return invocation.proceed(); 
+		 *                alert('# of Arguments: ' + invocation.arguments.length);
+		 *                return invocation.proceed();
 		 *          } );
 		 * @result Array<Function>
 		 *
-		 * @example jQuery.aop.around( {target: String, method: 'indexOf'}, function(invocation) { 
-		 *                alert('Searching: ' + invocation.arguments[0] + ' on: ' + this); 
-		 *                return invocation.proceed(); 
+		 * @example jQuery.aop.around( {target: String, method: 'indexOf'}, function(invocation) {
+		 *                alert('Searching: ' + invocation.arguments[0] + ' on: ' + this);
+		 *                return invocation.proceed();
 		 *          } );
 		 * @result Array<Function>
 		 *
 		 * @example jQuery.aop.around( {target: window, method: /Get(\d+)/}, function(invocation) {
-		 *                alert('Executing ' + invocation.method); 
-		 *                return invocation.proceed(); 
+		 *                alert('Executing ' + invocation.method);
+		 *                return invocation.proceed();
 		 *          } );
 		 * @desc Matches all global methods starting with 'Get' and followed by a number.
 		 * @result Array<Function>
@@ -321,7 +321,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 *
 		 * @name around
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved. Regex are supported, but not on built-in objects.
 		 * @param Function advice Function containing the code that will get called around the execution of the point-cut. This advice will be called with one
 		 *                        argument containing one function '.proceed()', the collection of arguments '.arguments', and the matched method name '.method'.
@@ -351,9 +351,9 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		 *
 		 * @name introduction
 		 * @param Map pointcut Definition of the point-cut to apply the advice. A point-cut is the definition of the object/s and method/s to be weaved.
-		 * @option Object target Target object to be weaved. 
+		 * @option Object target Target object to be weaved.
 		 * @option String method Name of the function to be weaved.
-		 * @param Function advice Function containing the code that will be executed on the point-cut. 
+		 * @param Function advice Function containing the code that will be executed on the point-cut.
 		 *
 		 * @type Array<Function>
 		 * @cat Plugins/General
@@ -362,7 +362,7 @@ var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 		{
 			return weave( pointcut, { type: _intro, value: advice } );
 		},
-		
+
 		/**
 		 * Configures global options.
 		 *

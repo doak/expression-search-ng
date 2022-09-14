@@ -45,7 +45,7 @@ let ExpressionSearchLog = {
     let delay = this.popupDelay / 1000; // chaning ms to seconds
     if ( delay <= 0 ) return;
     /*
-    http://mdn.beonex.com/en/Working_with_windows_in_chrome_code.html 
+    http://mdn.beonex.com/en/Working_with_windows_in_chrome_code.html
     https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsIAlertsService
     https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Alerts_and_Notifications
     Before Gecko 22, alert-service won't work with bb4win, use xul instead
@@ -119,7 +119,7 @@ let ExpressionSearchLog = {
       this.info("Log cleanup done");
     } catch(err){}
   },
-  
+
   now: function() { //author: meizz
     let format = "yyyy-MM-dd hh:mm:ss.SSS ";
     let time = new Date();
@@ -132,7 +132,7 @@ let ExpressionSearchLog = {
       "q+" : Math.floor((time.getMonth()+3)/3),  //quarter
       "S+" : time.getMilliseconds() //millisecond
     }
-    
+
     if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
       (time.getFullYear()+"").substr(4 - RegExp.$1.length));
     for(let k in o)if(new RegExp("("+ k +")").test(format))
@@ -141,7 +141,7 @@ let ExpressionSearchLog = {
           ("000"+ o[k]).substr((""+ o[k]).length+3-RegExp.$1.length));
     return format;
   },
-  
+
   verbose: false,
   setVerbose: function(verbose) {
     this.verbose = verbose;
@@ -167,7 +167,7 @@ let ExpressionSearchLog = {
       this.popup(popup,msg);
     }
   },
-  
+
   // from errorUtils.js
   dumpValue: function(value, i, recurse, compress, pfx, tee, level, map) {
     let t = "", s= "";
@@ -214,7 +214,7 @@ let ExpressionSearchLog = {
       if (recurse === undefined) recurse = 0;
       if (level === undefined) level = 0;
       if (compress === undefined) compress = true;
-      
+
       for (let junk = 0; junk < level; junk++)
         pfx += (compress) ? "| " : "|  ";
       tee = (compress) ? "+ " : "+- ";
@@ -236,7 +236,7 @@ let ExpressionSearchLog = {
             s += this.dumpValue(o[i], i, recurse, compress, pfx, tee, level, '');
           } catch (ex) { s += pfx + tee + " (exception) " + ex + "\n"; }
         }
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map, Map is not Object        
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map, Map is not Object
         if ( typeof(o.keys) == 'function' && typeof(o.get) == 'function' ) {
           for ( let i of o.keys() ) {
             try {
@@ -262,7 +262,7 @@ let ExpressionSearchLog = {
     s += pfx + "*\n";
     return s;
   },
-  
+
   logObject: function(obj, name, maxDepth, curDepth) {
     if (!this.verbose) return;
     console.dir(obj);
@@ -270,7 +270,7 @@ let ExpressionSearchLog = {
     this.info(name + ": " + ( typeof(obj) == 'object' ? ( Array.isArray(obj) ? 'Array' : obj ) : '' ) + "\n" + this.objectTreeAsString(obj,maxDepth,true));
     this._checked = [];
   },
-  
+
   logException: function(e, popup) {
     let msg = "";
     if ( typeof(e) != 'string' ) {
@@ -288,5 +288,5 @@ let ExpressionSearchLog = {
     Services.console.logMessage(scriptError);
     if ( typeof(popup) == 'undefined' || popup ) this.popup("Exception", msg);
   },
-  
+
 };

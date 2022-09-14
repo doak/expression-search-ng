@@ -4,22 +4,22 @@
  *
  * Version: 1.12
  * - add support for notifyExperiment and onNotifyBackground
- * 
+ *
  * Version: 1.11
  * - add openOptionsDialog()
- * 
+ *
  * Version: 1.10
  * - fix for 68
- * 
+ *
  * Version: 1.7
  * - fix for beta 87
- * 
+ *
  * Version: 1.6
  * - add support for options button/menu in add-on manager and fix 68 double menu entry
- * 
+ *
  * Version: 1.5
  * - fix for e10s
- * 
+ *
  * Version 1.4
  * - add registerOptionsPage
  *
@@ -43,7 +43,7 @@ var { AddonManager } = ChromeUtils.import("resource://gre/modules/AddonManager.j
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
-  getMessenger(context) {   
+  getMessenger(context) {
     let apis = [
       "storage",
       "runtime",
@@ -68,8 +68,8 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
       }
       return localstorage;
     }
-    
-    let messenger = {};    
+
+    let messenger = {};
     for (let api of apis) {
       switch (api) {
         case "storage":
@@ -90,12 +90,12 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
   getThunderbirdMajorVersion() {
     return parseInt(Services.appinfo.version.split(".").shift());
   }
-  
+
   getCards(e) {
     // This gets triggered by real events but also manually by providing the outer window.
     // The event is attached to the outer browser, get the inner one.
     let doc;
-    
+
     // 78,86, and 87+ need special handholding. *Yeah*.
     if (this.getThunderbirdMajorVersion() < 86) {
       let ownerDoc = e.document || e.target.ownerDocument;
@@ -108,13 +108,13 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
     }
     return doc.querySelectorAll("addon-card");
   }
-  
+
   // Add pref entry to 68
   add68PrefsEntry(event) {
     let id = this.menu_addonPrefs_id + "_" + this.uniqueRandomID;
 
     // Get the best size of the icon (16px or bigger)
-    let iconSizes = this.extension.manifest.icons 
+    let iconSizes = this.extension.manifest.icons
       ? Object.keys(this.extension.manifest.icons)
       : [];
     iconSizes.sort((a,b)=>a-b);
@@ -127,17 +127,17 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
           `<menuitem class="menuitem-iconic" id="${id}" image="${icon}" label="${name}" />`)
       :  event.target.ownerGlobal.MozXULElement.parseXULToFragment(
           `<menuitem id="${id}" label="${name}" />`);
-    
+
     event.target.appendChild(entry);
     let noPrefsElem = event.target.querySelector('[disabled="true"]');
     // using collapse could be undone by core, so we use display none
     // noPrefsElem.setAttribute("collapsed", "true");
     noPrefsElem.style.display = "none";
     event.target.ownerGlobal.document.getElementById(id).addEventListener("command", this);
-  }   
+  }
 
   // Event handler for the addon manager, to update the state of the options button.
-  handleEvent(e) {   
+  handleEvent(e) {
     switch (e.type) {
       // 68 add-on options menu showing
       case "popupshowing": {
@@ -153,10 +153,10 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
         BL.extension = this.extension;
         BL.messenger = this.getMessenger(this.context);
         let w = Services.wm.getMostRecentWindow("mail:3pane");
-        w.openDialog(this.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", BL);        
+        w.openDialog(this.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", BL);
       }
       break;
-      
+
       // 68 add-on options menu command
       case "command": {
         let BL = {}
@@ -165,7 +165,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
         e.target.ownerGlobal.openDialog(this.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", BL);
       }
       break;
-      
+
       // update, ViewChanged and manual call for add-on manager options overlay
       default: {
         let cards = this.getCards(e);
@@ -220,9 +220,9 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
           }
         }
       }
-    }      
-  }  
-  
+    }
+  }
+
 // Some tab/add-on-manager related functions
   getTabMail(window) {
     return window.document.getElementById("tabmail");
@@ -251,7 +251,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
     if (!managerWindow) {
       return;
     }
-    if (managerWindow 
+    if (managerWindow
           && managerWindow[this.uniqueRandomID]
           && managerWindow[this.uniqueRandomID].hasAddonManagerEventListeners
     ) {
@@ -275,7 +275,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
     this.pathToOptionsPage = null;
     this.chromeHandle = null;
     this.chromeData = null;
-    this.resourceData = null;    
+    this.resourceData = null;
     this.bootstrappedObj = {};
 
     // make the extension object and the messenger object available inside
@@ -296,7 +296,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
 
     const aomStartup = Cc["@mozilla.org/addons/addon-manager-startup;1"].getService(Ci.amIAddonManagerStartup);
     const resProto = Cc["@mozilla.org/network/protocol;1?name=resource"].getService(Ci.nsISubstitutingProtocolHandler);
-    
+
     let self = this;
 
     // TabMonitor to detect opening of tabs, to setup the options button in the add-on manager.
@@ -322,14 +322,14 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
                   /* in nsIRequest*/ aRequest,
                   /* in nsIURI*/ aLocation
               ) {
-                aTab.browser.removeProgressListener(reporterListener);  
+                aTab.browser.removeProgressListener(reporterListener);
                 resolve();
               },
               onStatusChange() {},
               onSecurityChange() {},
               onContentBlockingEvent() {}
-            }          
-            aTab.browser.addProgressListener(reporterListener);  
+            }
+            aTab.browser.addProgressListener(reporterListener);
           });
         }
         // Setup the ViewChange event listener in the outer browser of the add-on,
@@ -337,7 +337,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
         // let the ViewChange event do it
         self.setupAddonManager(self.getAddonManagerFromTab(aTab), false);
       },
-    };    
+    };
 
     this.onNotifyBackgroundObserver = {
       observe: async function (aSubject, aTopic, aData) {
@@ -390,7 +390,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
       "NotifyBackgroundObserver",
       false
     );
-    
+
     return {
       BootstrapLoader: {
 
@@ -427,7 +427,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
           let BL = {}
           BL.extension = self.extension;
           BL.messenger = self.getMessenger(self.context);
-          window.openDialog(self.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", BL);        
+          window.openDialog(self.pathToOptionsPage, "AddonOptions", "chrome,resizable,centerscreen", BL);
         },
 
 
@@ -515,13 +515,13 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
           } catch (e) {
             Components.utils.reportError(e)
           }
-          
+
           // Register window listener for main TB window
           if (self.pathToOptionsPage) {
             ExtensionSupport.registerWindowListener("injectListener_" + self.uniqueRandomID, {
               chromeURLs: [
                 "chrome://messenger/content/messenger.xul",
-                "chrome://messenger/content/messenger.xhtml",              
+                "chrome://messenger/content/messenger.xhtml",
               ],
               async onLoadWindow(window) {
                 if (self.getThunderbirdMajorVersion() < 78) {
@@ -537,7 +537,7 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
                 }
               },
 
-              onUnloadWindow(window) {          
+              onUnloadWindow(window) {
               }
             });
           }
@@ -566,14 +566,14 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
           if (element_addonPrefs.children.length == 1) {
               let noPrefsElem = element_addonPrefs.querySelector('[disabled="true"]');
               noPrefsElem.style.display = "inline";
-          }              
+          }
         } else {
           // Remove event listener for addon manager view changes
           let managerWindow = this.getAddonManagerFromWindow(window);
           if (managerWindow && managerWindow[this.uniqueRandomID] && managerWindow[this.uniqueRandomID].hasAddonManagerEventListeners) {
             managerWindow.document.removeEventListener("ViewChanged", this);
             managerWindow.document.removeEventListener("update", this);
-            
+
             let cards = this.getCards(managerWindow);
             if (this.getThunderbirdMajorVersion() < 88) {
               // Remove options menu in 78-87
@@ -592,13 +592,13 @@ var BootstrapLoader = class extends ExtensionCommon.ExtensionAPI {
               }
             }
           }
-          
+
           // Remove tabmonitor
           if (window[this.uniqueRandomID].hasTabMonitor) {
             this.getTabMail(window).unregisterTabMonitor(this.tabMonitor);
             window[this.uniqueRandomID].hasTabMonitor = false;
           }
-                    
+
         }
       }
       // Stop listening for new windows.

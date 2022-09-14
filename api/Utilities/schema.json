@@ -1,8 +1,8 @@
 [
   {
     "namespace": "Utilities",
-    "functions": [ 
-  
+    "functions": [
+
 
 
       {
@@ -28,7 +28,7 @@
             "type": "string",
             "description": "url to open in browser"
           }
- 
+
 
         ]
       }
